@@ -36,7 +36,41 @@ void clearCanvas() {
         }
     }
 }
+//DAY 4: DRAWING SHAPES
+// Function to read memory and draw the shapes onto the canvas
+void paintCanvas() {
+    // Loop through every shape currently saved in memory
+    for (int i = 0; i < currentShapeCount; i++) {
+        Shape s = objectList[i];
 
+        // Only draw it if it is active (not deleted)
+        if (s.is_active == 1) {
+            
+            // --- DRAW RECTANGLE (Type 2) ---
+            if (s.type == 2) {
+                // Loop through the height and width of the rectangle
+                for (int row = s.y1; row <= s.y2; row++) {
+                    for (int col = s.x1; col <= s.x2; col++) {
+                        // Safety check: Make sure we don't draw outside the canvas
+                        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+                            // Draw only the borders of the rectangle
+                            if (row == s.y1 || row == s.y2 || col == s.x1 || col == s.x2) {
+                                canvas[row][col] = s.symbol;
+                            }
+                        }
+                    }
+                }
+            }
+            // (We will add the math for Lines, Circles, and Triangles later!)
+            else {
+                // For now, just plot the starting point for unknown shapes
+                if (s.y1 >= 0 && s.y1 < ROWS && s.x1 >= 0 && s.x1 < COLS) {
+                    canvas[s.y1][s.x1] = s.symbol;
+                }
+            }
+        }
+    }
+}
 // Function to print the canvas to the screen
 void displayPicture() {
     for (int i = 0; i < ROWS; i++) {
@@ -88,7 +122,7 @@ int main() {
         clearCanvas();
         
         // TODO: Tomorrow we will add the function here that actually paints the shapes!
-
+        paintCanvas();
         printf("\n--- My 2D Graphics Editor ---\n");
         displayPicture();
         printf("Total Shapes in Memory: %d\n", currentShapeCount);
