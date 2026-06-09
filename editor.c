@@ -47,13 +47,67 @@ void displayPicture() {
     }
 }
 
+
+// --- NEW DAY 3 CODE: INTERACTIVITY ---
+
+// Function to get shape details from the user and save it to memory
+void addShape() {
+    if (currentShapeCount >= MAX_SHAPES) {
+        printf("Memory full! Cannot add more shapes.\n");
+        return;
+    }
+
+    Shape newShape;
+    newShape.id = currentShapeCount + 1; // Give it a unique ID
+    newShape.is_active = 1;              // Mark it as visible
+
+    printf("\nChoose shape type (1=Line, 2=Rectangle, 3=Circle): ");
+    scanf("%d", &newShape.type);
+
+    printf("Enter starting X and Y coordinates (e.g., 5 10): ");
+    scanf("%d %d", &newShape.x1, &newShape.y1);
+
+    printf("Enter ending X and Y (or radius for circle): ");
+    scanf("%d %d", &newShape.x2, &newShape.y2);
+
+    printf("Enter the character to draw with (e.g., *): ");
+    scanf(" %c", &newShape.symbol); // Space before %c is important to catch the Enter key!
+
+    // Save the new shape into our global array
+    objectList[currentShapeCount] = newShape;
+    currentShapeCount++;
+
+    printf("Shape #%d saved to memory!\n", newShape.id);
+}
+
 int main() {
-    // 1. Initialize the canvas
-    clearCanvas();
-    
-    // 2. Show it to the user
-    printf("--- My 2D Graphics Editor ---\n");
-    displayPicture();
+    int choice;
+
+    // The infinite loop keeps the program running until the user types 2
+    while (1) {
+        clearCanvas();
+        
+        // TODO: Tomorrow we will add the function here that actually paints the shapes!
+
+        printf("\n--- My 2D Graphics Editor ---\n");
+        displayPicture();
+        printf("Total Shapes in Memory: %d\n", currentShapeCount);
+        
+        printf("\nMenu:\n");
+        printf("1. Add a Shape\n");
+        printf("2. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 1) {
+            addShape();
+        } else if (choice == 2) {
+            printf("Exiting editor. Goodbye!\n");
+            break; // Breaks out of the while loop to end the program
+        } else {
+            printf("Invalid choice. Try again.\n");
+        }
+    }
 
     return 0;
 }
