@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <stdlib.h>
 // Define the size of our canvas
 #define ROWS 20
 #define COLS 40
@@ -38,6 +38,7 @@ void clearCanvas() {
 }
 //DAY 4: DRAWING SHAPES
 // Function to read memory and draw the shapes onto the canvas
+// Function to read memory and draw the shapes onto the canvas
 void paintCanvas() {
     // Loop through every shape currently saved in memory
     for (int i = 0; i < currentShapeCount; i++) {
@@ -46,8 +47,28 @@ void paintCanvas() {
         // Only draw it if it is active (not deleted)
         if (s.is_active == 1) {
             
+            // --- DRAW LINE (Type 1) ---
+            if (s.type == 1) {
+                // Bresenham's Line Algorithm
+                int x0 = s.x1, y0 = s.y1;
+                int x1 = s.x2, y1 = s.y2;
+                int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+                int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+                int err = dx + dy, e2;
+
+                while (1) {
+                    if (y0 >= 0 && y0 < ROWS && x0 >= 0 && x0 < COLS) {
+                        canvas[y0][x0] = s.symbol;
+                    }
+                    if (x0 == x1 && y0 == y1) break;
+                    e2 = 2 * err;
+                    if (e2 >= dy) { err += dy; x0 += sx; }
+                    if (e2 <= dx) { err += dx; y0 += sy; }
+                }
+            }
+            
             // --- DRAW RECTANGLE (Type 2) ---
-            if (s.type == 2) {
+            else if (s.type == 2) {
                 // Loop through the height and width of the rectangle
                 for (int row = s.y1; row <= s.y2; row++) {
                     for (int col = s.x1; col <= s.x2; col++) {
@@ -61,11 +82,28 @@ void paintCanvas() {
                     }
                 }
             }
-            // (We will add the math for Lines, Circles, and Triangles later!)
-            else {
-                // For now, just plot the starting point for unknown shapes
-                if (s.y1 >= 0 && s.y1 < ROWS && s.x1 >= 0 && s.x1 < COLS) {
-                    canvas[s.y1][s.x1] = s.symbol;
+            
+            // --- DRAW CIRCLE (Type 3) ---
+            else if (s.type == 3) {
+                // Since our menu asks for X and Y for ending coordinates, 
+                // if it's a circle, the user's first number (x2) acts as our radius!
+                int radius = s.x2; 
+                
+                for (int row = 0; row < ROWS; row++) {
+                    for (int col = 0; col < COLS; col++) {
+                        // Calculate distance from center (x1, y1)
+                        int dx = col - s.x1;
+                        int dy = row - s.y1;
+                        int distSquared = (dx * dx) + (dy * dy);
+                        int radSquared = radius * radius;
+                        
+                        // Check if the current grid spot is on the circle's edge
+                        // We use + radius and - radius to give the line a little bit of thickness 
+                        // so it doesn't look completely broken on a text grid.
+                        if (distSquared >= radSquared - radius && distSquared <= radSquared + radius) {
+                            canvas[row][col] = s.symbol;
+                        }
+                    }
                 }
             }
         }
